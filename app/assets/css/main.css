@@ -1,0 +1,55 @@
+@font-face {
+  font-family: 'Zapf Humanist';
+  src: url('~/assets/fonts/Zapf-Humanist-601-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Suisse Intl';
+  src: url('~/assets/fonts/SuisseIntlTrial-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+:root {
+  /* Colors from Graphic Charter */
+  --color-bg-general: #fffef2;
+  --color-bg-product: #f5f3e9;
+  --color-bg-tag: #c2c2af;
+  --color-bg-secondary: #f6f5e8;
+  --color-bg-tertiary: #f6f5e8;
+
+  --color-text-main: #333333;
+  --color-text-body: #666666;
+  --color-text-disabled: #999999;
+
+  --color-button-bg: #333333;
+  --color-button-hover: #000000;
+
+  --color-accent: #945c26;
+  /* mise en avant */
+
+  /* Typography custom properties */
+  --font-title: 'Zapf Humanist', Garamond, Cormorant, serif;
+  --font-body: 'Suisse Intl', Garamond, sans-serif;
+}
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Apply default styling based on the graphic charter */
+body {
+  color: var(--color-text-main);
+  font-family: var(--font-body);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-title);
+}
