@@ -23,6 +23,12 @@ export function createPinnedGalleryAnimation(
   const ctx = gsap.context(() => {
     const { section, images } = elements
 
+    const img1 = images[0]
+    const img2 = images[1]
+    const img3 = images[2]
+
+    if (!img1 || !img2 || !img3) return
+
     // Pin de la colonne gauche indépendamment de la timeline
     ScrollTrigger.create({
       trigger: section,
@@ -33,8 +39,8 @@ export function createPinnedGalleryAnimation(
     })
 
     // États initiaux
-    gsap.set(images[0], { opacity: 1 })
-    images.slice(1).forEach((img) => gsap.set(img, { opacity: 0 }))
+    gsap.set(img1, { opacity: 1 })
+    gsap.set([img2, img3], { opacity: 0 })
 
     // Timeline unique — chaque segment représente un crossfade
     const tl = gsap.timeline({
@@ -47,15 +53,15 @@ export function createPinnedGalleryAnimation(
     })
 
     // Segment 1 : image 1 → image 2
-    tl.to(images[0], { opacity: 0, duration: 1, ease: 'power1.inOut' }, 0)
-      .to(images[1], { opacity: 1, duration: 1, ease: 'power1.inOut' }, 0)
+    tl.to(img1, { opacity: 0, duration: 1, ease: 'power1.inOut' }, 0)
+      .to(img2, { opacity: 1, duration: 1, ease: 'power1.inOut' }, 0)
 
     // Pause visuelle — image 2 reste visible
       .to({}, { duration: 0.5 })
 
     // Segment 2 : image 2 → image 3
-      .to(images[1], { opacity: 0, duration: 1, ease: 'power1.inOut' })
-      .to(images[2], { opacity: 1, duration: 1, ease: 'power1.inOut' }, '<')
+      .to(img2, { opacity: 0, duration: 1, ease: 'power1.inOut' })
+      .to(img3, { opacity: 1, duration: 1, ease: 'power1.inOut' }, '<')
   }, elements.section)
 
   return ctx

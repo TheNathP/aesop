@@ -6,9 +6,8 @@ defineProps<{
 }>()
 </script>
 <template>
-  <section
-    class="relative w-full h-[500px] overflow-hidden"
-  >
+  <!-- Desktop: original overlay layout -->
+  <section class="hidden md:block relative w-full h-[500px] overflow-hidden">
     <img
       :src="image"
       :alt="title"
@@ -35,4 +34,26 @@ defineProps<{
       </div>
     </div>
   </section>
+
+  <!-- Mobile: image alone, then text below on tertiary background -->
+  <div class="md:hidden">
+    <section class="relative w-full h-[300px] overflow-hidden">
+      <img
+        :src="image"
+        :alt="title"
+        class="absolute inset-0 w-full h-full object-cover object-[-380px]"
+        loading="lazy"
+      />
+    </section>
+    <section class="bg-aesop-bg-tertiary px-5 py-8">
+      <div class="flex flex-col gap-3 max-w-md">
+        <h1 class="font-body text-2xl leading-tight text-aesop-text-main">
+          {{ title }}
+        </h1>
+        <p class="font-body text-sm leading-relaxed text-aesop-text-main">
+          {{ text }}
+        </p>
+      </div>
+    </section>
+  </div>
 </template>

@@ -29,26 +29,28 @@ function select(key: string) {
     aria-label="Navigation de section"
     role="tablist"
   >
-    <ul class="flex items-center gap-8 list-none m-0 p-0 min-h-12">
-      <li
-        v-for="section in sections"
-        :key="section.key"
-        class="shrink-0 py-3"
-      >
-        <button
-          type="button"
-          role="tab"
-          :aria-selected="modelValue === section.key"
-          :class="[
-            'sub-nav-link relative inline-block font-body text-[0.8125rem] tracking-[0.04em] text-aesop-text-main bg-transparent border-none p-0 cursor-pointer no-underline',
-            { 'is-active': modelValue === section.key }
-          ]"
-          @click="select(section.key)"
+    <div class="sub-nav-scroll-wrapper relative">
+      <ul class="flex items-center gap-8 list-none m-0 p-0 min-h-12 overflow-x-auto md:overflow-x-visible scrollbar-hide">
+        <li
+          v-for="section in sections"
+          :key="section.key"
+          class="shrink-0 py-3"
         >
-          {{ section.label }}
-        </button>
-      </li>
-    </ul>
+          <button
+            type="button"
+            role="tab"
+            :aria-selected="modelValue === section.key"
+            :class="[
+              'sub-nav-link relative inline-block font-body text-[0.8125rem] tracking-[0.04em] text-aesop-text-main bg-transparent border-none p-0 cursor-pointer no-underline whitespace-nowrap',
+              { 'is-active': modelValue === section.key }
+            ]"
+            @click="select(section.key)"
+          >
+            {{ section.label }}
+          </button>
+        </li>
+      </ul>
+    </div>
   </nav>
 </template>
 
@@ -74,5 +76,33 @@ function select(key: string) {
   outline: 1px solid var(--color-text-main);
   outline-offset: 2px;
 }
-</style>
 
+/* Hide scrollbar across browsers */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Edge fade masks for mobile horizontal scroll */
+@media (max-width: 767px) {
+  .sub-nav-scroll-wrapper {
+    -webkit-mask-image: linear-gradient(
+      to right,
+      transparent 0%,
+      black 3%,
+      black 97%,
+      transparent 100%
+    );
+    mask-image: linear-gradient(
+      to right,
+      transparent 0%,
+      black 3%,
+      black 97%,
+      transparent 100%
+    );
+  }
+}
+</style>
