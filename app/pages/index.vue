@@ -7,6 +7,24 @@ const pageSections = [
 ]
 
 const activeSection = ref('philosophie')
+
+const philosophySlides = [
+  {
+    image: '/images/philosophy_1.png',
+    alt: 'Ingrédients botaniques disposés sur papier texturé',
+    citation: '« Le soin est une forme de connaissance silencieuse, transmise par le geste autant que par la matière. »',
+  },
+  {
+    image: '/images/philosophy_2.png',
+    alt: 'Mortier artisanal et herbes séchées',
+    citation: '« Chaque formulation est le fruit d\'une recherche patiente — un dialogue entre la science et la terre. »',
+  },
+  {
+    image: '/images/philosophy_3.png',
+    alt: 'Flacon compte-gouttes et romarin frais',
+    citation: '« La beauté réside dans l\'attention portée à ce qui est essentiel, et dans le refus du superflu. »',
+  },
+]
 </script>
 
 <template>
@@ -23,14 +41,10 @@ const activeSection = ref('philosophie')
       <article
         v-if="activeSection === 'philosophie'"
         key="philosophie"
-        class="page-section"
+        class="page-section page-section--flush"
         role="tabpanel"
       >
-        <h2>Philosophie</h2>
-        <p>
-          Une approche du soin fondée sur la recherche botanique,
-          l'attention au détail et le respect des matières.
-        </p>
+        <PinnedGallery :slides="philosophySlides" />
       </article>
 
       <article
@@ -79,6 +93,11 @@ const activeSection = ref('philosophie')
 .page-section {
   padding: 6rem 2rem;
   min-height: 80vh;
+}
+
+.page-section--flush {
+  padding: 0;
+  min-height: 0;
 }
 
 .page-section h2 {

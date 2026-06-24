@@ -23,24 +23,24 @@ function select(key: string) {
 <template>
   <nav
     :class="[
-      'sub-nav',
-      isNavHidden ? 'is-hidden' : ''
+      'sticky z-40 bg-[#EBEADE] px-8 transition-[top] duration-300 ease-in-out',
+      isNavHidden ? 'top-0' : 'top-20'
     ]"
     aria-label="Navigation de section"
     role="tablist"
   >
-    <ul class="sub-nav__list">
+    <ul class="flex items-center gap-8 list-none m-0 p-0 min-h-12">
       <li
         v-for="section in sections"
         :key="section.key"
-        class="sub-nav__item"
+        class="shrink-0 py-3"
       >
         <button
           type="button"
           role="tab"
           :aria-selected="modelValue === section.key"
           :class="[
-            'sub-nav__link',
+            'sub-nav-link relative inline-block font-body text-[0.8125rem] tracking-[0.04em] text-aesop-text-main bg-transparent border-none p-0 cursor-pointer no-underline',
             { 'is-active': modelValue === section.key }
           ]"
           @click="select(section.key)"
@@ -53,49 +53,7 @@ function select(key: string) {
 </template>
 
 <style scoped>
-.sub-nav {
-  position: sticky;
-  z-index: 40;
-  background-color: var(--color-bg, #EBEADE);
-  padding-inline: 2rem;
-  transition: top 0.3s ease-in-out;
-  top: 5rem;
-}
-
-.sub-nav.is-hidden {
-  top: 0;
-}
-
-.sub-nav__list {
-  display: flex;
-  align-items: center;
-  gap: 2rem;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  min-height: 3rem;
-}
-
-.sub-nav__item {
-  flex-shrink: 0;
-  padding-block: 0.75rem;
-}
-
-.sub-nav__link {
-  position: relative;
-  display: inline-block;
-  font-family: var(--font-body);
-  font-size: 0.8125rem;
-  letter-spacing: 0.04em;
-  color: var(--color-text-main);
-  background: none;
-  border: none;
-  padding: 0;
-  cursor: pointer;
-  text-decoration: none;
-}
-
-.sub-nav__link::after {
+.sub-nav-link::after {
   content: '';
   position: absolute;
   left: 0;
@@ -106,17 +64,15 @@ function select(key: string) {
   transition: width 0.3s ease-in-out;
 }
 
-.sub-nav__link:hover::after,
-.sub-nav__link:focus-visible::after {
+.sub-nav-link:hover::after,
+.sub-nav-link:focus-visible::after,
+.sub-nav-link.is-active::after {
   width: 100%;
 }
 
-.sub-nav__link.is-active::after {
-  width: 100%;
-}
-
-.sub-nav__link:focus-visible {
+.sub-nav-link:focus-visible {
   outline: 1px solid var(--color-text-main);
   outline-offset: 2px;
 }
 </style>
+
