@@ -1,12 +1,15 @@
 <script setup lang="ts">
 const route = useRoute()
-const showNavigation = computed(() => route.path !== '/guide-cadeaux')
+const showGlobalLayout = computed(() => route.path !== '/guide-cadeaux')
 </script>
 
 <template>
-  <div>
+  <div class="min-h-screen flex flex-col">
     <NuxtRouteAnnouncer />
-    <Navigation v-if="showNavigation" />
-    <NuxtPage />
+    <Navigation v-if="showGlobalLayout" />
+    <main class="flex-grow">
+      <NuxtPage />
+    </main>
+    <Footer v-if="showGlobalLayout" />
   </div>
 </template>
