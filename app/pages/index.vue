@@ -25,6 +25,33 @@ const philosophySlides = [
     citation: '« La beauté réside dans l\'attention portée à ce qui est essentiel, et dans le refus du superflu. »',
   },
 ]
+
+const carouselProducts = [
+  {
+    tag: 'Les incontournables',
+    image: '/images/test_produit.webp',
+    name: 'Gel Lavant Résurrection Aromatique pour les Mains',
+    description: 'Un gel nettoyant doux pour les mains éreintées par le travail',
+  },
+  {
+    tag: 'Ajout récent',
+    image: '/images/test_produit.webp',
+    name: 'Sérum Nourrissant pour les Mains Solais',
+    description: 'Réduit l\'apparence des taches brunes',
+  },
+  {
+    tag: 'Les incontournables',
+    image: '/images/test_produit.webp',
+    name: 'Baume Aromatique Résurrection pour les Lèvres',
+    description: 'Arôme boisé et herbacé, aux notes d\'agrumes',
+  },
+  {
+    tag: 'Nouveauté',
+    image: '/images/test_produit.webp',
+    name: 'Crème Hydratante pour le Visage',
+    description: 'Une hydratation profonde et durable',
+  },
+]
 </script>
 
 <template>
@@ -50,40 +77,38 @@ const philosophySlides = [
       <article
         v-else-if="activeSection === 'rituels'"
         key="rituels"
-        class="page-section"
+        class="page-section page-section--flush"
         role="tabpanel"
       >
-        <h2>Rituels</h2>
-        <p>
-          Chaque geste du quotidien peut devenir un moment de calme
-          et de présence à soi.
-        </p>
+        <ProductCarousel
+          title="Partenaires suggérés"
+          text="Un nouveau programme rythmé pour les mains"
+          :products="carouselProducts"
+        />
       </article>
 
       <article
         v-else-if="activeSection === 'ingredients'"
         key="ingredients"
-        class="page-section"
+        class="page-section page-section--flush"
         role="tabpanel"
       >
-        <h2>Ingrédients</h2>
-        <p>
-          Sélectionnés pour leur efficacité et leur origine,
-          nos ingrédients témoignent d'un engagement envers la qualité.
-        </p>
+        <SectionHeader
+          title="Ingrédients"
+          text="Sélectionnés pour leur efficacité et leur origine, nos ingrédients témoignent d'un engagement envers la qualité et le respect de la peau."
+        />
       </article>
 
       <article
         v-else-if="activeSection === 'lecture'"
         key="lecture"
-        class="page-section"
+        class="page-section page-section--flush"
         role="tabpanel"
       >
-        <h2>Lecture</h2>
-        <p>
-          Des textes choisis pour accompagner le temps qui passe,
-          entre réflexion et contemplation.
-        </p>
+        <SectionHeader
+          title="Lecture"
+          text="Des textes choisis pour accompagner le temps qui passe, entre réflexion et contemplation, afin d'enrichir l'esprit autant que les sens."
+        />
       </article>
     </Transition>
   </section>

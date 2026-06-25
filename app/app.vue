@@ -4,7 +4,7 @@ const showGlobalLayout = computed(() => route.path !== '/guide-cadeaux')
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col">
+  <div class="min-h-screen flex flex-col bg-aesop-bg-general">
     <NuxtRouteAnnouncer />
     <Navigation v-if="showGlobalLayout" />
     <main class="flex-grow">
