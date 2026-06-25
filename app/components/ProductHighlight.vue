@@ -10,6 +10,11 @@ interface Props {
 }
 
 defineProps<Props>()
+
+const emit = defineEmits<{
+  (e: 'primary-click'): void
+  (e: 'secondary-click'): void
+}>()
 </script>
 
 <template>
@@ -34,6 +39,7 @@ defineProps<Props>()
             v-if="primaryLabel"
             type="button"
             class="w-full py-3 px-6 border border-aesop-text-main bg-transparent text-aesop-text-main font-body text-sm tracking-wide transition-colors duration-200 hover:bg-aesop-bg-product"
+            @click="emit('primary-click')"
           >
             {{ primaryLabel }}
           </button>
@@ -41,6 +47,7 @@ defineProps<Props>()
             v-if="secondaryLabel"
             type="button"
             class="w-full py-3 px-6 border border-aesop-text-main bg-aesop-text-main text-white font-body text-sm tracking-wide transition-colors duration-200 hover:bg-[#1a1a1a]"
+            @click="emit('secondary-click')"
           >
             {{ secondaryLabel }}
           </button>

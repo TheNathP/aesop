@@ -1,6 +1,7 @@
 export const useRoutineState = () => {
   const isRoutineValidated = useState('routine-validated', () => false)
   const routineSelectedProducts = useState<string[]>('routine-products', () => [])
+  const hasSecondRoutine = useState('has-second-routine', () => false)
 
   function saveRoutine(products: string[]) {
     routineSelectedProducts.value = products
@@ -15,10 +16,16 @@ export const useRoutineState = () => {
     }
   }
 
+  function completeSecondRoutine() {
+    hasSecondRoutine.value = true
+  }
+
   return {
     isRoutineValidated,
     routineSelectedProducts,
+    hasSecondRoutine,
     saveRoutine,
     addRoutineProducts,
+    completeSecondRoutine,
   }
 }

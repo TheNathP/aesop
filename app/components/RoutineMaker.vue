@@ -14,13 +14,16 @@ interface Product {
 
 interface Props {
   questions?: Step[]
-  products: Product[]
+  products?: Product[]
   minSelections?: number
+  hideProductSelection?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
   questions: () => [],
-  minSelections: 2
+  products: () => [],
+  minSelections: 2,
+  hideProductSelection: false
 })
 
 const emit = defineEmits<{
@@ -29,13 +32,17 @@ const emit = defineEmits<{
 }>()
 
 const steps = computed(() => props.questions)
-const totalSteps = computed(() => steps.value.length + 1)
+const totalSteps = computed(() => props.hideProductSelection ? steps.value.length : steps.value.length + 1)
 const currentStep = ref(0)
 
 const singleAnswers = ref<string[]>([])
 const selectedProducts = ref<string[]>([])
 
-const isLastStep = computed(() => currentStep.value === totalSteps.value - 1)
+const isLastStep = computed(() => {
+  if (props.hideProductSelection) return false
+  return currentStep.value === totalSteps.value - 1
+})
+
 const currentQuestion = computed(() => {
   if (isLastStep.value) {
     if (props.minSelections === 1) return 'Choisissez le(s) produit(s) à ajouter à votre routine'
@@ -48,6 +55,8 @@ function selectSingleOption(option: string) {
   singleAnswers.value[currentStep.value] = option
   if (currentStep.value < totalSteps.value - 1) {
     currentStep.value++
+  } else if (props.hideProductSelection) {
+    emit('submit', [])
   }
 }
 

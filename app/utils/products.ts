@@ -28,4 +28,25 @@ export const corpsProducts = [
   }
 ]
 
-export const carouselProducts = [...visageProducts, ...corpsProducts]
+export const secondRoutineProducts = [
+  {
+    tag: '',
+    image: '/images/test_produit.webp',
+    name: 'Sérum Anti-Oxydant à la Graine de Persil',
+    description: 'Sérum léger et hydratant, offrant une forte protection antioxydante.',
+  },
+  {
+    tag: '',
+    image: '/images/test_produit.webp',
+    name: 'Huile de Soin Fabuleuse pour le Visage',
+    description: 'Huile hydratante quotidienne pour les peaux sèches ou stressées.',
+  },
+  {
+    tag: '',
+    image: '/images/test_produit.webp',
+    name: 'Crème Hydratante à la Noix de Macadamia',
+    description: 'Crème riche et nourrissante pour une hydratation intense.',
+  }
+]
+
+export const carouselProducts = [...visageProducts, ...corpsProducts, ...secondRoutineProducts]

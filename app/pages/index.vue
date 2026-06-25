@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const { isRoutineValidated, routineSelectedProducts } = useRoutineState()
+const { isRoutineValidated, routineSelectedProducts, hasSecondRoutine } = useRoutineState()
 
 const pageSections = computed(() => [
   { key: 'coups-de-coeur', label: 'Voir vos coups de coeur' },
@@ -10,6 +10,7 @@ const pageSections = computed(() => [
 const route = useRoute()
 
 const activeSection = ref('coups-de-coeur')
+const isSecondCarouselHidden = ref(false)
 
 onMounted(() => {
   if (route.query.view === 'details-routine') {
@@ -17,7 +18,13 @@ onMounted(() => {
       activeSection.value = 'details-routine'
     } else {
       activeSection.value = 'coups-de-coeur'
-      // Optionally clean up the URL to remove ?view
+      navigateTo('/', { replace: true })
+    }
+  } else if (route.query.view === 'routines') {
+    if (isRoutineValidated.value) {
+      activeSection.value = 'routines'
+    } else {
+      activeSection.value = 'coups-de-coeur'
       navigateTo('/', { replace: true })
     }
   }
@@ -79,8 +86,8 @@ const detailsHighlightData = {
   header: 'Un pilier pour soutenir votre routine',
   title: 'Sérum Hydratant Léger pour le Visage',
   text: 'Apres avoir tourne les pages du nettoyage et de la purification avec le Gel Nettoyant Etonnant et le Toner Astringent a l\'Orange Amere, ce Serum Hydratant Leger vient conclure l\'histoire en apportant a la peau une hydratation douce et equilibree. Enrichi en Aloe Vera apaisant et en Ylang-Ylang equilibrant, il offre un fini mat et confortable, pour une peau fraiche, souple et parfaitement preparee a ecrire une nouvelle journee.',
-  primaryLabel: 'Voir le produit &rarr;',
-  secondaryLabel: 'Tester en magasin &rarr;',
+  primaryLabel: 'Voir le produit',
+  secondaryLabel: 'Tester en magasin',
   image: '/images/illu1.webp'
 }
 </script>
@@ -145,6 +152,21 @@ const detailsHighlightData = {
           @primary-click="navigateTo('/ajouter-produit')"
           @secondary-click="activeSection = 'details-routine'"
         />
+        <ProductCarousel
+          v-if="hasSecondRoutine && !isSecondCarouselHidden"
+          header="Routine cheveux&#10;recommandée"
+          title="Chaque chevelure raconte une histoire unique"
+          text="Cette sélection a été composée à partir des besoins que vous avez évoqués. Considérez-la comme une piste de lecture, pensée pour accompagner vos cheveux au fil des jours.
+
+Si vous souhaitez approfondir l'histoire, nos conseillers en magasin seront ravis de vous accueillir. A votre écoute, ils pourront répondre à vos questions, vous aider et vous guider vers des soins adaptés à vos besoins."
+          secondary-label="Voir ma routine &rarr;"
+          :products="secondRoutineProducts"
+          class="mt-12 border-t border-aesop-text-disabled/20 pt-12 relative"
+          show-close-button
+          @close="isSecondCarouselHidden = true"
+          @secondary-click="activeSection = 'details-routine'"
+        />
+
         <ProductHighlight
           :header="routinesHighlightData.header"
           :title="routinesHighlightData.title"
@@ -152,6 +174,7 @@ const detailsHighlightData = {
           :primary-label="routinesHighlightData.primaryLabel"
           :image="routinesHighlightData.image"
           class="mt-12 border-t border-aesop-text-disabled/20"
+          @primary-click="navigateTo('/creation-seconde-routine')"
         />
       </article>
 

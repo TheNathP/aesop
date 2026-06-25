@@ -14,6 +14,7 @@ interface Props {
   primaryLabel?: string
   secondaryLabel?: string
   products: Product[]
+  showCloseButton?: boolean
 }
 
 defineProps<Props>()
@@ -21,6 +22,7 @@ defineProps<Props>()
 const emit = defineEmits<{
   (e: 'primaryClick'): void
   (e: 'secondaryClick'): void
+  (e: 'close'): void
 }>()
 
 const trackRef = ref<HTMLElement | null>(null)
@@ -81,25 +83,39 @@ onMounted(() => {
   <section class="flex flex-col w-full bg-aesop-bg-general">
     <!-- Carousel area -->
     <div
-      class="relative flex"
+      class="relative w-full flex flex-row border-y border-aesop-text-disabled/20 bg-aesop-bg-general overflow-hidden"
       @mouseenter="isHovered = true"
       @mouseleave="isHovered = false"
     >
       <!-- Intro panel (fixed, mirrors ProductHighlight left panel) -->
       <div class="w-2/5 shrink-0 flex items-center py-20 px-12">
         <div class="max-w-[500px]">
-          <p
-            v-if="header"
-            class="font-body text-xs tracking-widest uppercase text-aesop-text-disabled mb-4"
-          >
-            {{ header }}
-          </p>
+          <div v-if="header || showCloseButton" class="flex items-start gap-4 mb-6">
+            <button
+              v-if="showCloseButton"
+              type="button"
+              class="text-aesop-text-main hover:opacity-60 transition-opacity bg-transparent border-0 cursor-pointer p-0 font-bold text-xl leading-none mt-0.5"
+              aria-label="Fermer"
+              @click="emit('close')"
+            >
+              ✕
+            </button>
+            <p
+              v-if="header"
+              :class="[
+                'font-body',
+                showCloseButton ? 'text-[0.875rem] font-bold text-aesop-text-main leading-tight whitespace-pre-wrap' : 'text-xs tracking-widest uppercase text-aesop-text-disabled mb-4'
+              ]"
+            >
+              {{ header }}
+            </p>
+          </div>
 
           <h2 class="font-title text-[1.75rem] lg:text-[2.25rem] leading-snug text-aesop-text-main mb-6">
             {{ title }}
           </h2>
 
-          <p class="font-body text-sm leading-relaxed text-aesop-text-body mb-10">
+          <p class="font-body text-sm leading-relaxed text-aesop-text-body mb-10 whitespace-pre-wrap">
             {{ text }}
           </p>
 
