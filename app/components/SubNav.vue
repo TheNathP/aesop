@@ -2,6 +2,7 @@
 interface SectionItem {
   key: string
   label: string
+  disabled?: boolean
 }
 
 const props = defineProps<{
@@ -15,8 +16,9 @@ const emit = defineEmits<{
 
 const { isNavHidden } = useNavState()
 
-function select(key: string) {
-  emit('update:modelValue', key)
+function select(section: SectionItem) {
+  if (section.disabled) return
+  emit('update:modelValue', section.key)
 }
 </script>
 
@@ -40,11 +42,13 @@ function select(key: string) {
             type="button"
             role="tab"
             :aria-selected="modelValue === section.key"
+            :disabled="section.disabled"
             :class="[
-              'sub-nav-link relative inline-block font-body text-[0.8125rem] tracking-[0.04em] text-aesop-text-main bg-transparent border-none p-0 cursor-pointer no-underline whitespace-nowrap',
+              'sub-nav-link relative inline-block font-body text-[0.8125rem] tracking-[0.04em] p-0 cursor-pointer no-underline whitespace-nowrap bg-transparent border-none',
+              section.disabled ? 'text-aesop-text-disabled cursor-not-allowed opacity-50' : 'text-aesop-text-main',
               { 'is-active': modelValue === section.key }
             ]"
-            @click="select(section.key)"
+            @click="select(section)"
           >
             {{ section.label }}
           </button>

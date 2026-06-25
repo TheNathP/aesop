@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const route = useRoute()
-const showGlobalLayout = computed(() => route.path !== '/guide-cadeaux')
+const showGlobalLayout = computed(() => !['/creation-de-routine', '/ajouter-produit'].includes(route.path))
 </script>
 
 <template>

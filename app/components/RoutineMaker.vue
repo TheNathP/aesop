@@ -4,74 +4,70 @@ interface Step {
   options: string[]
 }
 
-interface CardOption {
-  title: string
+interface Product {
+  tag: string
   image: string
+  imageAlt?: string
+  name: string
+  description: string
 }
 
-interface CardStep {
-  question: string
-  cards: CardOption[]
+interface Props {
+  questions?: Step[]
+  products: Product[]
+  minSelections?: number
 }
 
-const steps: Step[] = [
-  {
-    question: 'Quelle est la raison de ce cadeau ?',
-    options: [
-      'Pour exprimer sa gratitude',
-      'Exprimer de l\'affection ou de l\'admiration',
-      'Pour faire naître un sourire complice',
-    ],
-  },
-  {
-    question: 'À qui est destiné ce cadeau ?',
-    options: [
-      'Un proche',
-      'Un collègue',
-      'Un ami',
-      'Pour soi-même',
-    ],
-  },
-  {
-    question: 'Quel univers olfactif préférez-vous ?',
-    options: [
-      'Boisé et terreux',
-      'Floral et délicat',
-      'Herbacé et frais',
-      'Agrumes et vivifiant',
-    ],
-  },
-]
-
-const lastStep: CardStep = {
-  question: 'Quelle gamme vous inspire ?',
-  cards: [
-    { title: 'Soins pour le visage', image: '/images/philosophy_1.png' },
-    { title: 'Mains et corps', image: '/images/philosophy_2.png' },
-    { title: 'Parfums d\'intérieur', image: '/images/philosophy_3.png' },
-  ],
-}
-
-const totalSteps = steps.length + 1
-const currentStep = ref(0)
-const answers = ref<string[]>([])
-
-const isLastStep = computed(() => currentStep.value === totalSteps - 1)
-const currentQuestion = computed(() => {
-  if (isLastStep.value) return lastStep.question
-  return steps[currentStep.value]?.question || ''
+const props = withDefaults(defineProps<Props>(), {
+  questions: () => [],
+  minSelections: 2
 })
 
-function selectOption(option: string) {
-  answers.value[currentStep.value] = option
-  if (currentStep.value < totalSteps - 1) {
+const emit = defineEmits<{
+  (e: 'submit', selectedProducts: string[]): void
+  (e: 'close'): void
+}>()
+
+const steps = computed(() => props.questions)
+const totalSteps = computed(() => steps.value.length + 1)
+const currentStep = ref(0)
+
+const singleAnswers = ref<string[]>([])
+const selectedProducts = ref<string[]>([])
+
+const isLastStep = computed(() => currentStep.value === totalSteps.value - 1)
+const currentQuestion = computed(() => {
+  if (isLastStep.value) {
+    if (props.minSelections === 1) return 'Choisissez le(s) produit(s) à ajouter à votre routine'
+    return 'Choisissez au moins deux produits'
+  }
+  return steps.value[currentStep.value]?.question || ''
+})
+
+function selectSingleOption(option: string) {
+  singleAnswers.value[currentStep.value] = option
+  if (currentStep.value < totalSteps.value - 1) {
     currentStep.value++
+  }
+}
+
+function toggleProduct(name: string) {
+  if (selectedProducts.value.includes(name)) {
+    selectedProducts.value = selectedProducts.value.filter(n => n !== name)
+  } else {
+    selectedProducts.value.push(name)
   }
 }
 
 function goBack() {
   if (currentStep.value > 0) {
     currentStep.value--
+  }
+}
+
+function submitRoutine() {
+  if (selectedProducts.value.length >= props.minSelections) {
+    emit('submit', selectedProducts.value)
   }
 }
 
@@ -107,7 +103,15 @@ const decorativeImages = [
         </span>
       </Transition>
 
-      <span class="font-body text-sm text-aesop-text-main">Guide cadeaux</span>
+      <span class="font-body text-sm text-aesop-text-main">Création de routine</span>
+      <!-- To balance the flex space-between exactly like before -->
+      <button
+        type="button"
+        class="font-body text-[0.8125rem] text-aesop-text-main bg-transparent border-0 cursor-pointer p-0 transition-opacity duration-200 hover:opacity-60"
+        @click="emit('close')"
+      >
+        Fermer
+      </button>
     </header>
 
     <!-- Logo + Timeline -->
@@ -143,11 +147,16 @@ const decorativeImages = [
     <div class="flex-1 flex flex-col items-center justify-center px-6 py-8">
       <Transition name="step-fade" mode="out-in">
         <div :key="currentStep" class="flex flex-col items-center w-full max-w-[56rem]">
-          <h2 class="font-title text-[1.25rem] md:text-[1.625rem] text-center text-aesop-text-main mb-10 leading-snug">
+          <h2
+            :class="[
+              'font-title text-[1.25rem] md:text-[1.625rem] text-center text-aesop-text-main leading-snug',
+              currentStep === 0 && !isLastStep ? 'border border-aesop-text-main px-8 py-10 max-w-2xl mb-12' : 'mb-10'
+            ]"
+          >
             {{ currentQuestion }}
           </h2>
 
-          <!-- Standard options (steps 1-3): always on one line on desktop -->
+          <!-- Standard options (steps 1-N): always on one line on desktop -->
           <div
             v-if="!isLastStep"
             class="flex flex-col items-center gap-3 w-full sm:flex-row sm:flex-nowrap sm:justify-center"
@@ -158,48 +167,52 @@ const decorativeImages = [
               type="button"
               :class="[
                 'font-body text-sm text-aesop-text-main bg-transparent border border-solid cursor-pointer whitespace-nowrap px-8 py-3.5 transition-colors duration-200 w-full max-w-[20rem] sm:w-auto sm:max-w-none text-center hover:bg-aesop-text-main hover:text-aesop-bg-general hover:border-aesop-text-main',
-                answers[currentStep] === option
+                singleAnswers[currentStep] === option
                   ? 'border-aesop-text-main bg-aesop-bg-product'
                   : 'border-[#999999]'
               ]"
-              @click="selectOption(option)"
+              @click="selectSingleOption(option)"
             >
               {{ option }}
             </button>
           </div>
 
-          <!-- Card options (last step) -->
-          <div v-else class="flex flex-col items-center gap-6 w-full sm:flex-row sm:flex-wrap sm:justify-center">
+          <!-- Products options (last step) -->
+          <div v-else class="flex flex-col items-center w-full">
+            <div class="flex flex-col items-center gap-6 w-full sm:flex-row sm:flex-wrap sm:justify-center mb-10">
+              <ProductCard
+                v-for="product in products"
+                :key="product.name"
+                :tag="product.tag"
+                :image="product.image"
+                :image-alt="product.imageAlt"
+                :name="product.name"
+                :description="product.description"
+                :selected="selectedProducts.includes(product.name)"
+                @click="toggleProduct(product.name)"
+                class="max-w-[16rem] sm:max-w-none"
+              />
+            </div>
+
             <button
-              v-for="card in lastStep.cards"
-              :key="card.title"
               type="button"
+              :disabled="selectedProducts.length < props.minSelections"
               :class="[
-                'flex flex-col items-center bg-transparent border border-solid cursor-pointer p-0 w-full max-w-[16rem] sm:w-56 sm:max-w-none transition-[border-color] duration-200 hover:border-aesop-text-disabled',
-                answers[currentStep] === card.title
-                  ? 'border-aesop-text-main'
-                  : 'border-transparent'
+                'py-3 px-8 border font-body text-sm tracking-wide transition-colors duration-200 mt-6',
+                selectedProducts.length >= props.minSelections
+                  ? 'border-aesop-text-main bg-aesop-text-main text-white hover:bg-[#1a1a1a] cursor-pointer'
+                  : 'border-[#999999] bg-transparent text-[#999999] cursor-not-allowed opacity-50'
               ]"
-              @click="selectOption(card.title)"
+              @click="submitRoutine"
             >
-              <div class="w-full aspect-[3/4] overflow-hidden bg-aesop-bg-product rounded-sm">
-                <img
-                  :src="card.image"
-                  :alt="card.title"
-                  class="w-full h-full object-cover"
-                  loading="lazy"
-                />
-              </div>
-              <span class="font-body text-sm text-aesop-text-main text-center py-4 px-2">
-                {{ card.title }}
-              </span>
+              Valider la routine
             </button>
           </div>
         </div>
       </Transition>
     </div>
 
-    <!-- Decorative images (steps 1-3 only) -->
+    <!-- Decorative images (steps 1-N only) -->
     <div v-if="!isLastStep" class="shrink-0 overflow-hidden px-4 mb-32">
       <div class="flex gap-2 origin-center scale-[1.4]">
         <img
@@ -214,7 +227,7 @@ const decorativeImages = [
     </div>
 
     <!-- Footer -->
-    <footer class="flex justify-between items-center px-6 py-4 shrink-0">
+    <footer class="flex justify-between items-center px-6 py-4 shrink-0 mt-auto">
       <span class="font-body text-xs text-aesop-text-body">© Aesop</span>
       <div class="flex gap-3">
         <button

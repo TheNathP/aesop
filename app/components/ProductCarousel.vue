@@ -8,12 +8,20 @@ interface Product {
 }
 
 interface Props {
+  header?: string
   title: string
   text: string
+  primaryLabel?: string
+  secondaryLabel?: string
   products: Product[]
 }
 
 defineProps<Props>()
+
+const emit = defineEmits<{
+  (e: 'primaryClick'): void
+  (e: 'secondaryClick'): void
+}>()
 
 const trackRef = ref<HTMLElement | null>(null)
 const isHovered = ref(false)
@@ -73,14 +81,53 @@ onMounted(() => {
   <section class="flex flex-col w-full bg-aesop-bg-general">
     <!-- Carousel area -->
     <div
-      class="relative overflow-hidden"
+      class="relative flex"
       @mouseenter="isHovered = true"
       @mouseleave="isHovered = false"
     >
-      <!-- Track -->
+      <!-- Intro panel (fixed, mirrors ProductHighlight left panel) -->
+      <div class="w-2/5 shrink-0 flex items-center py-20 px-12">
+        <div class="max-w-[500px]">
+          <p
+            v-if="header"
+            class="font-body text-xs tracking-widest uppercase text-aesop-text-disabled mb-4"
+          >
+            {{ header }}
+          </p>
+
+          <h2 class="font-title text-[1.75rem] lg:text-[2.25rem] leading-snug text-aesop-text-main mb-6">
+            {{ title }}
+          </h2>
+
+          <p class="font-body text-sm leading-relaxed text-aesop-text-body mb-10">
+            {{ text }}
+          </p>
+
+          <div v-if="primaryLabel || secondaryLabel" class="flex flex-col gap-3">
+            <button
+              v-if="primaryLabel"
+              type="button"
+              class="w-full py-3 px-6 border border-aesop-text-main bg-transparent text-aesop-text-main font-body text-sm tracking-wide transition-colors duration-200 hover:bg-aesop-bg-product"
+              @click="emit('primaryClick')"
+            >
+              {{ primaryLabel }}
+            </button>
+            <button
+              v-if="secondaryLabel"
+              type="button"
+              class="w-full py-3 px-6 border border-aesop-text-main bg-aesop-text-main text-white font-body text-sm tracking-wide transition-colors duration-200 hover:bg-[#1a1a1a]"
+              @click="emit('secondaryClick')"
+            >
+              {{ secondaryLabel }}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Track (3/5 remaining) -->
       <div
         ref="trackRef"
-        class="flex gap-4 overflow-x-auto scrollbar-hide py-2 px-2"
+        class="w-3/5 flex gap-4 overflow-x-auto scrollbar-hide py-2 pr-2"
         :class="{ 'cursor-grab': !isDragging, 'cursor-grabbing': isDragging }"
         @scroll="updateScrollState"
         @pointerdown="onPointerDown"
@@ -88,26 +135,11 @@ onMounted(() => {
         @pointerup="onPointerUp"
         @pointercancel="onPointerUp"
       >
-        <!-- Intro slide (inside the carousel) -->
-        <div
-          class="flex flex-col shrink-0 w-[calc((100%-3rem)/3.7)] min-w-[220px] px-4 pt-8 lg:pt-20"
-        >
-          <p
-            class="font-body text-[0.6875rem] text-aesop-text-disabled uppercase tracking-widest mb-3"
-          >
-            {{ title }}
-          </p>
-          <h2
-            class="font-title text-[1.5rem] lg:text-[1.625rem] text-aesop-text-main leading-snug"
-          >
-            {{ text }}
-          </h2>
-        </div>
-
         <!-- Product cards -->
         <ProductCard
           v-for="(product, index) in products"
           :key="index"
+          class="carousel-card"
           :tag="product.tag"
           :image="product.image"
           :image-alt="product.imageAlt"
@@ -122,7 +154,7 @@ onMounted(() => {
           v-if="isHovered && canScrollLeft"
           type="button"
           aria-label="Défiler vers la gauche"
-          class="absolute left-0 top-1/2 -translate-y-1/2 w-[80px] h-[80px] flex items-center justify-center bg-aesop-text-main text-white transition-opacity duration-200 hover:opacity-90 z-10"
+          class="absolute left-[40%] top-1/2 -translate-y-1/2 w-[80px] h-[80px] flex items-center justify-center bg-aesop-text-main text-white transition-opacity duration-200 hover:opacity-90 z-10"
           @click="scrollBy(-1)"
         >
           <svg
@@ -183,6 +215,14 @@ onMounted(() => {
 </template>
 
 <style scoped>
+/* Card width: 2 full + 70% of 3rd visible within the track
+   Track has gap-4 (1rem), so 2 gaps between 2.7 cards
+   width = (100% - 2 * 1rem) / 2.7 */
+.carousel-card {
+  width: calc((100% - 2rem) / 2.7) !important;
+  min-width: 180px;
+}
+
 /* Hide scrollbar across browsers */
 .scrollbar-hide {
   -ms-overflow-style: none;
